@@ -21,7 +21,7 @@ public enum Status {
 	
 	INTERNADO {
 		public String toString() {
-			return "Paciente está internado.";
+			return "Paciente está internado no leito ";
 		}
 	}, 
 	

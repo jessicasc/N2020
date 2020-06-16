@@ -10,6 +10,7 @@ import pacientes.Pacientes;
 import pacientes.Status;
 import filas.filaAtendimento;
 import filas.filaInternacao;
+import internacao.Internacao;
 import menu.Menu;
 import excessoes.CpfInvalidoException;
 import excessoes.OpcaoInvalidaException;
@@ -35,7 +36,7 @@ public class Controle {
 				"Registro do paciente", INFORMATION_MESSAGE);
 	}
 
-	public static void atenderPaciente(int qtd) {
+	public static void atenderPaciente(Internacao i, int qtd) {
 		int resp;
 		int aux = 0;
 
@@ -93,9 +94,9 @@ public class Controle {
 				int cont = calcularTotalInternados();
 
 				if (cont < qtd) {
-					showMessageDialog(null, "O paciente " + p.getNome() + " será internado!", "Paciente internado",
+					i.internar(p);
+					showMessageDialog(null, "O paciente " + p.getNome() + " será internado no leito "+p.getLeito()+"!", "Paciente internado",
 							INFORMATION_MESSAGE);
-					p.setStatus(Status.INTERNADO);
 				} else {
 					filaInternacao.enqueue(p);
 					showMessageDialog(null, "No momento não há leitos disponíveis.\n" + "O paciente " + p.getNome()
@@ -110,7 +111,7 @@ public class Controle {
 		}
 	}
 
-	public static void liberarPaciente() {
+	public static void liberarPaciente(Internacao in) {
 		if (Controle.calcularTotalInternados() > 0) {
 			
 			int cpf = parseInt(showInputDialog(null, "Digite o CPF do paciente para liberá-lo", "Liberar paciente",
@@ -150,9 +151,9 @@ public class Controle {
 
 					if (!filaInternacao.isEmpty()) {
 						p = filaInternacao.dequeue();
-						p.setStatus(Status.INTERNADO);
+						in.internar(p);
 						showMessageDialog(null,
-								"O paciente " + p.getNome() + " saiu da fila de internação e está internado!",
+								"O paciente " + p.getNome() + " saiu da fila de internação e está internado no leito "+p.getLeito()+"!",
 								"Paciente internado", INFORMATION_MESSAGE);
 					}
 				}
@@ -179,7 +180,7 @@ public class Controle {
 			if (i == -1) {
 				throw new CpfInvalidoException("Não há nenhum paciente cadastrado com esse CPF!");
 			} else {
-				showMessageDialog(null, lista.get(i).toString(), "Consultar paciente", INFORMATION_MESSAGE);
+				showMessageDialog(null, lista.get(i).getDados(), "Consultar paciente", INFORMATION_MESSAGE);
 			}
 		} catch (CpfInvalidoException e) {
 			showMessageDialog(null, e.getMessage(), "CPF Inválido", WARNING_MESSAGE);

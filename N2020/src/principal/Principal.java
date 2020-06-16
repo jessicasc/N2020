@@ -1,10 +1,11 @@
 package principal;
 
-import static javax.swing.JOptionPane.*;
 import static java.lang.Integer.parseInt;
+import static javax.swing.JOptionPane.*;
 
 import controle.Controle;
 import excessoes.OpcaoInvalidaException;
+import internacao.Internacao;
 import menu.Menu;
 
 public class Principal {
@@ -12,6 +13,8 @@ public class Principal {
 		int op = 0;
 		
 		int qtd = Integer.parseInt(showInputDialog(null, "Quantos leitos para internação tem nessa unidade?", "Total de leitos", INFORMATION_MESSAGE));
+		
+		Internacao i = new Internacao(qtd);
 		
 		Controle.filaAtendimento.init();
 		Controle.filaInternacao.init();
@@ -28,13 +31,14 @@ public class Principal {
 						Controle.registrarPaciente();
 						break;
 					case 2:
-						Controle.atenderPaciente(qtd);
+						Controle.atenderPaciente(i, qtd);
 						break;
 					case 3:
-						Controle.liberarPaciente();
+						Controle.liberarPaciente(i);
 						break;
 					case 4:
 						Controle.consultarPaciente();
+						 
 						break;
 					case 5:
 						if (Controle.filaAtendimento.isEmpty()) {

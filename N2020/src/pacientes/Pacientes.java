@@ -4,6 +4,7 @@ public class Pacientes {
 	private String nome;
 	private int cpf;
 	private Status status;
+	private int leito;
 	
 	public Pacientes(String nome, int cpf, Status status) {
 		this.nome = nome;
@@ -35,7 +36,21 @@ public class Pacientes {
 		this.nome = nome;
 	}
 	
-	public String toString() {
-		return "Nome do paciente: "+nome+"\nStatus do paciente: "+status.toString();
+	public int getLeito() {
+		return leito;
+	}
+
+	public void setLeito(int leito) {
+		this.leito = leito;
+	}
+
+	public String getDados() {
+		String aux = "";
+		aux += "Nome do paciente: "+nome+"\nStatus do paciente: "+status.toString();
+		if (status == Status.INTERNADO) {
+			aux += leito;
+		}
+		return aux;
+		
 	}
 }
