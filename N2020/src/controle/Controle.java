@@ -22,15 +22,14 @@ public class Controle {
 	public static void registrarPaciente() {
 		String nome;
 		int cpf;
-		Status status;
 
 		nome = showInputDialog(null, "Informe o nome do paciente", "Registro do paciente", INFORMATION_MESSAGE);
 		cpf = parseInt(showInputDialog(null, "Informe o CPF do paciente", "Registro do paciente", INFORMATION_MESSAGE));
-		status = Status.FILA_ATENDIMENTO;
+		Status status = Status.FILA_ATENDIMENTO;
 
-		Pacientes p1 = new Pacientes(nome, cpf, status);
-		filaAtendimento.enqueue(p1);
-		lista.add(p1);
+		Pacientes p = new Pacientes(nome, cpf, status);
+		filaAtendimento.enqueue(p);
+		lista.add(p);
 
 		showMessageDialog(null, "Paciente " + nome + " registrado com sucesso na fila para atendimento.",
 				"Registro do paciente", INFORMATION_MESSAGE);
@@ -47,44 +46,44 @@ public class Controle {
 			showMessageDialog(null, "Você atenderá o paciente " + p.getNome() + " faça a ele as perguntas a seguir",
 					"Atendimento", INFORMATION_MESSAGE);
 
-			resp = showConfirmDialog(null, "Você sente febre?", "Perguntas", INFORMATION_MESSAGE);
+			resp = showConfirmDialog(null, "Você sente febre?", "Atendimento", INFORMATION_MESSAGE);
 			if (resp == 0) {
 				aux++;
 			}
 
-			resp = showConfirmDialog(null, "Você tem tosse seca e/ ou secretiva?", "Perguntas", INFORMATION_MESSAGE);
+			resp = showConfirmDialog(null, "Você tem tosse seca e/ ou secretiva?", "Atendimento", INFORMATION_MESSAGE);
 			if (resp == 0) {
 				aux++;
 			}
 
-			resp = showConfirmDialog(null, "Você tem falta de ar e/ ou dificuldades para respirar?", "Perguntas",
+			resp = showConfirmDialog(null, "Você tem falta de ar e/ ou dificuldades para respirar?", "Atendimento",
 					INFORMATION_MESSAGE);
 			if (resp == 0) {
 				aux++;
 			}
 
-			resp = showConfirmDialog(null, "Você sente dor de garganta?", "Perguntas", INFORMATION_MESSAGE);
+			resp = showConfirmDialog(null, "Você sente dor de garganta?", "Atendimento", INFORMATION_MESSAGE);
 			if (resp == 0) {
 				aux++;
 			}
 
-			resp = showConfirmDialog(null, "Você sente fadiga?", "Perguntas", INFORMATION_MESSAGE);
+			resp = showConfirmDialog(null, "Você sente fadiga?", "Atendimento", INFORMATION_MESSAGE);
 			if (resp == 0) {
 				aux++;
 			}
 
-			resp = showConfirmDialog(null, "Você possui alguma doença crônica (diabetes, asma ou hipertensão?",
-					"Perguntas", INFORMATION_MESSAGE);
+			resp = showConfirmDialog(null, "Você possui alguma doença crônica (diabetes, asma ou hipertensão)?",
+					"Atendimento", INFORMATION_MESSAGE);
 			if (resp == 0) {
 				aux++;
 			}
 
-			resp = showConfirmDialog(null, "Você tem mais de 60 anos?", "Perguntas", INFORMATION_MESSAGE);
+			resp = showConfirmDialog(null, "Você tem mais de 60 anos?", "Atendimento", INFORMATION_MESSAGE);
 			if (resp == 0) {
 				aux++;
 			}
 
-			resp = showConfirmDialog(null, "Alguém do seu convívio contraiu a doença?", "Perguntas",
+			resp = showConfirmDialog(null, "Alguém do seu convívio contraiu a doença?", "Atendimento",
 					INFORMATION_MESSAGE);
 			if (resp == 0) {
 				aux++;
@@ -112,55 +111,62 @@ public class Controle {
 	}
 
 	public static void liberarPaciente() {
-		int cpf = parseInt(showInputDialog(null, "Digite o CPF do paciente para liberá-lo", "Liberar paciente",
-				INFORMATION_MESSAGE));
+		if (Controle.calcularTotalInternados() > 0) {
+			
+			int cpf = parseInt(showInputDialog(null, "Digite o CPF do paciente para liberá-lo", "Liberar paciente",
+					INFORMATION_MESSAGE));
 
-		int i = consultarCPF(cpf);
+			int i = consultarCPF(cpf);
 
-		try {
+			try {
 
-			if (i == -1) {
-				throw new CpfInvalidoException("Não há nenhum paciente cadastrado com esse CPF!");
-			} else if (lista.get(i).getStatus() != Status.INTERNADO) {
-				showMessageDialog(null, "O paciente " + lista.get(i).getNome() + " não está internado!",
-						"Liberar paciente", INFORMATION_MESSAGE);
-			} else {
-				int resp = parseInt(showInputDialog(null, Menu.menuSecundario(lista.get(i).getNome()),
-						"Liberar paciente", INFORMATION_MESSAGE));
-
-				if (resp < 1 || resp > 2) {
-					throw new OpcaoInvalidaException("Digite uma opção válida!");
-				}
-
-				switch (resp) {
-				case 1:
-					lista.get(i).setStatus(Status.EM_ALTA);
-					showMessageDialog(null, "O paciente " + lista.get(i).getNome() + " recebeu alta!",
+				if (i == -1) {
+					throw new CpfInvalidoException("Não há nenhum paciente cadastrado com esse CPF!");
+				} else if (lista.get(i).getStatus() != Status.INTERNADO) {
+					showMessageDialog(null, "O paciente " + lista.get(i).getNome() + " não está internado!",
 							"Liberar paciente", INFORMATION_MESSAGE);
-					break;
-				case 2:
-					lista.get(i).setStatus(Status.OBITO);
-					showMessageDialog(null, "O paciente " + lista.get(i).getNome() + " veio a óbito!",
-							"Liberar paciente", INFORMATION_MESSAGE);
-					break;
-				}
+				} else {
+					Pacientes p = lista.get(i);
+					
+					int resp = parseInt(showInputDialog(null, Menu.menuSecundario(p.getNome()),
+							"Liberar paciente", INFORMATION_MESSAGE));
 
-				if (!filaInternacao.isEmpty()) {
-					Pacientes p = filaInternacao.dequeue();
-					p.setStatus(Status.INTERNADO);
-					showMessageDialog(null,
-							"O paciente " + p.getNome() + " saiu da fila de internação e está internado!",
-							"Paciente internado", INFORMATION_MESSAGE);
+					if (resp < 1 || resp > 2) {
+						throw new OpcaoInvalidaException("Digite uma opção válida!");
+					}
+
+					switch (resp) {
+					case 1:
+						p.setStatus(Status.EM_ALTA);
+						showMessageDialog(null, "O paciente " + p.getNome() + " recebeu alta!",
+								"Liberar paciente", INFORMATION_MESSAGE);
+						break;
+					case 2:
+						p.setStatus(Status.OBITO);
+						showMessageDialog(null, "O paciente " + p.getNome() + " veio a óbito!",
+								"Liberar paciente", INFORMATION_MESSAGE);
+						break;
+					}
+
+					if (!filaInternacao.isEmpty()) {
+						p = filaInternacao.dequeue();
+						p.setStatus(Status.INTERNADO);
+						showMessageDialog(null,
+								"O paciente " + p.getNome() + " saiu da fila de internação e está internado!",
+								"Paciente internado", INFORMATION_MESSAGE);
+					}
 				}
+			} catch (CpfInvalidoException e) {
+				showMessageDialog(null, e.getMessage(), "CPF Inválido", WARNING_MESSAGE);
+			} catch (OpcaoInvalidaException e) {
+				showMessageDialog(null, e.getMessage(), "ERRO", ERROR_MESSAGE);
+			} catch (NumberFormatException e) {
+				showMessageDialog(null, "Você deve digitar um número", "ERRO", ERROR_MESSAGE);
 			}
-		} catch (CpfInvalidoException e) {
-			showMessageDialog(null, e.getMessage(), "CPF Inválido", WARNING_MESSAGE);
-		} catch (OpcaoInvalidaException e) {
-			showMessageDialog(null, e.getMessage(), "ERRO", ERROR_MESSAGE);
-		} catch (NumberFormatException e) {
-			showMessageDialog(null, "Você deve digitar um número", "ERRO", ERROR_MESSAGE);
+			
+		} else {
+			showMessageDialog(null, "Não há pacientes internados nesse hospital!", "Liberar paciente", WARNING_MESSAGE);
 		}
-
 	}
 
 	public static void consultarPaciente() {

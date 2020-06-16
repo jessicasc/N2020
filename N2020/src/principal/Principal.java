@@ -11,7 +11,7 @@ public class Principal {
 	public static void main(String[] args) {
 		int op = 0;
 		
-		int qtd = Integer.parseInt(showInputDialog(null, "Quantos leitos para internação tem nessa unidade?", "Total de vagas", INFORMATION_MESSAGE));
+		int qtd = Integer.parseInt(showInputDialog(null, "Quantos leitos para internação tem nessa unidade?", "Total de leitos", INFORMATION_MESSAGE));
 		
 		Controle.filaAtendimento.init();
 		Controle.filaInternacao.init();
@@ -31,11 +31,7 @@ public class Principal {
 						Controle.atenderPaciente(qtd);
 						break;
 					case 3:
-						if (Controle.calcularTotalInternados() > 0) {
-							Controle.liberarPaciente();
-						} else {
-							showMessageDialog(null, "Não há pacientes internados nesse hospital!", "Liberar paciente", WARNING_MESSAGE);
-						}
+						Controle.liberarPaciente();
 						break;
 					case 4:
 						Controle.consultarPaciente();
@@ -50,7 +46,7 @@ public class Principal {
 						break;
 				}
 			} catch (NumberFormatException e) {
-				showMessageDialog(null, "Você deve digitar um número", "ERRO", ERROR_MESSAGE);
+				showMessageDialog(null, "Você deve digitar um número!", "ERRO", ERROR_MESSAGE);
 			} catch (OpcaoInvalidaException e) {
 				showMessageDialog(null, e.getMessage(), "ERRO", ERROR_MESSAGE);
 			}
